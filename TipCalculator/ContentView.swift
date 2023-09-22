@@ -16,19 +16,35 @@ struct ContentView: View {
     
     var body: some View {
         VStack(spacing: 40) {
-            VStack {
-                Text ("Enter Bill Amount")
-                    .foregroundColor( .secondary)
-                
-                TextField("0.00", text: $enteredAmount)
-                    .font (.system(size: 70, weight: .semibold, design: .rounded))
-                    .keyboardType(.decimalPad)
-                    . multilineTextAlignment(.center)
-            }
             
+            billAmount
+            
+            sliderSection
+            
+            tipSection
+                        
+            totalSection
+        }
+        .padding (30)
+    }
+    
+    private var billAmount: some View {
+        VStack {
+            Text ("Enter Bill Amount")
+                .foregroundColor( .secondary)
+            
+            TextField("0.00", text: $enteredAmount)
+                .font (.system(size: 70, weight: .semibold, design: .rounded))
+                .keyboardType(.decimalPad)
+                . multilineTextAlignment(.center)
+        }
+    }
+    
+    private var sliderSection: some View {
+        VStack {
             Text("Tip: \(tipSlider, specifier: "%.0f")%")
             
-            Slider(value: $tipSlider, in: 0...100, step: 1)
+            Slider(value: $tipSlider, in: 0...35, step: 1)
                 .onChange(of: tipSlider) { _ in
                     guard let amount = Double (enteredAmount) else {
                         print("Invalid Entry")
@@ -43,27 +59,30 @@ struct ContentView: View {
                     tipAmount = tip
                     totalAmount = amount + tipAmount
                 }
-            
-            VStack {
-                Text(tipAmount, format: .currency (code: "USD"))
-                    .font(.title.bold ())
-                
-                Text("Tip")
-                    .foregroundColor (.secondary)
-                    .font (.caption)
-            }
-            .padding (.top, 20)
-            
-            VStack {
-                Text (totalAmount, format: .currency (code: "USD"))
-                    .font (.title.bold ())
-                
-                Text ("Total")
-                    .foregroundColor (.secondary)
-                    .font (.caption)
-            }
         }
-        .padding (30)
+        
+    }
+    private var tipSection: some View {
+        VStack {
+            Text(tipAmount, format: .currency (code: "USD"))
+                .font(.title.bold ())
+            
+            Text("Tip")
+                .foregroundColor (.secondary)
+                .font (.caption)
+        }
+        .padding (.top, 20)
+    }
+    
+    private var totalSection: some View {
+        VStack {
+            Text (totalAmount, format: .currency (code: "USD"))
+                .font (.title.bold ())
+            
+            Text ("Total")
+                .foregroundColor (.secondary)
+                .font (.caption)
+        }
     }
 }
 struct ContentView_Previews: PreviewProvider {
@@ -72,10 +91,3 @@ struct ContentView_Previews: PreviewProvider {
     }
 }
 
-struct Calculation {
-    func calculateTip(of enteredAmount: Double, with tip: Double) -> Double? {
-        guard enteredAmount >= 0 && tip >= 0 else { return nil }
-        let tipPercentage = tip / 100
-        return enteredAmount * tipPercentage
-    }
-}
